@@ -4,7 +4,7 @@ import postgres from "postgres";
 
 const conn: postgres.Sql = postgres(
   `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}`,
-  { max: 1 }
+  { max: 1, ssl: true }
 );
 
 const db = drizzle(conn);

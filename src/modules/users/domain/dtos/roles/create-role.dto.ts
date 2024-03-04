@@ -1,4 +1,3 @@
-import Container from "typedi";
 import {
   Input,
   arrayAsync,
@@ -12,7 +11,7 @@ import {
 } from "valibot";
 import { PermissionDrizzleRepo } from "../../../drizzle/permissions/permission.repository";
 
-const permissionRepository = Container.get(PermissionDrizzleRepo);
+const permissionRepository = PermissionDrizzleRepo.getInstance();
 
 const CreateRoleDto = objectAsync({
   name: string("ຈະຕ້ອງບໍ່ຫວ່າງເປົ່າ.", [

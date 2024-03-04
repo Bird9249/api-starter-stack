@@ -1,9 +1,7 @@
 import { write } from "bun";
 import { unlink } from "node:fs/promises";
-import { Service } from "typedi";
 import { IFileUpload } from "../file-upload.interface";
 
-@Service()
 export class BunFileUpload implements IFileUpload {
   async upload(path: string, file: File): Promise<string> {
     const splitFileName = file.name.split(".");
@@ -28,5 +26,14 @@ export class BunFileUpload implements IFileUpload {
     const filename = `${base}-${randomString}.${extension}`;
 
     return filename;
+  }
+
+  private static instance: BunFileUpload;
+  public static getInstance(): BunFileUpload {
+    if (!BunFileUpload.instance) {
+      BunFileUpload.instance = new BunFileUpload();
+    }
+
+    return BunFileUpload.instance;
   }
 }

@@ -1,4 +1,3 @@
-import { Inject, Service } from "typedi";
 import ICommandHandler from "../../../../common/interfaces/cqrs/command.interface";
 import { IPayload } from "../../../../infrastructure/jwt/generate-jwt.interface";
 import { HonoGenerateJwtService } from "../../../../infrastructure/jwt/hono/hono-generate-jwt.service";
@@ -7,7 +6,6 @@ import Session from "../../domain/entities/session.entity";
 import User from "../../domain/entities/user.entity";
 import { AuthDrizzleRepo } from "../../drizzle/auth/auth.repository";
 
-@Service()
 export default class RefreshTokenCase
   implements
     ICommandHandler<
@@ -15,10 +13,8 @@ export default class RefreshTokenCase
       { access_token: string; refresh_token: string; message: string }
     >
 {
-  constructor(
-    @Inject() private readonly _generateJwt: HonoGenerateJwtService,
-    @Inject() private readonly _repository: AuthDrizzleRepo
-  ) {}
+  private readonly _generateJwt = HonoGenerateJwtService.getInstance();
+  private readonly _repository = AuthDrizzleRepo.getInstance();
 
   async execute({ token }: RefreshTokenCommand): Promise<{
     access_token: string;
@@ -61,5 +57,14 @@ export default class RefreshTokenCase
     session.user = user;
 
     await this._repository.createSession(session);
+  }
+
+  private static instance: RefreshTokenCase;
+  public static getInstance(): RefreshTokenCase {
+    if (!RefreshTokenCase.instance) {
+      RefreshTokenCase.instance = new RefreshTokenCase();
+    }
+
+    return RefreshTokenCase.instance;
   }
 }

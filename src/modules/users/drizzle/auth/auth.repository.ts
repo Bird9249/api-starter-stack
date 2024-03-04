@@ -1,5 +1,4 @@
 import { eq, sql } from "drizzle-orm";
-import { Inject, Service } from "typedi";
 import { DrizzleConnection } from "../../../../infrastructure/drizzle/connection";
 import Session from "../../domain/entities/session.entity";
 import User from "../../domain/entities/user.entity";
@@ -11,17 +10,13 @@ import { SessionMapper } from "../mappers/session.mapper";
 import { UserMapper } from "../mappers/user.mapper";
 import { sessions } from "../schema/sessions";
 
-@Service()
 export class AuthDrizzleRepo implements IAuthRepository {
   private readonly drizzle = DrizzleConnection.getInstance();
-
-  constructor(
-    @Inject() private readonly _mapper: SessionMapper,
-    @Inject() private readonly _userMapper: UserMapper,
-    @Inject() private readonly _profileMapper: ProfileMapper,
-    @Inject() private readonly _roleMapper: RoleMapper,
-    @Inject() private readonly _permissionMapper: PermissionMapper
-  ) {}
+  private readonly _mapper = SessionMapper.getInstance();
+  private readonly _userMapper = UserMapper.getInstance();
+  private readonly _profileMapper = ProfileMapper.getInstance();
+  private readonly _roleMapper = RoleMapper.getInstance();
+  private readonly _permissionMapper = PermissionMapper.getInstance();
 
   private _checkUserPrepared = this.drizzle.db.query.users
     .findFirst({
@@ -79,5 +74,14 @@ export class AuthDrizzleRepo implements IAuthRepository {
 
   async removeSession(id: string): Promise<void> {
     await this.drizzle.db.delete(sessions).where(eq(sessions.id, id));
+  }
+
+  private static instance: AuthDrizzleRepo;
+  public static getInstance(): AuthDrizzleRepo {
+    if (!AuthDrizzleRepo.instance) {
+      AuthDrizzleRepo.instance = new AuthDrizzleRepo();
+    }
+
+    return AuthDrizzleRepo.instance;
   }
 }

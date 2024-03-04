@@ -1,8 +1,6 @@
-import { Service } from "typedi";
 import User from "../../domain/entities/user.entity";
 import { InsertUserSchema, UserSchema } from "../schema/users";
 
-@Service()
 export class UserMapper {
   toModel(entity: User): InsertUserSchema {
     return {
@@ -22,5 +20,15 @@ export class UserMapper {
     entity.created_at = model.created_at;
     entity.updated_at = model.updated_at;
     return entity;
+  }
+
+  private static instance: UserMapper;
+
+  public static getInstance(): UserMapper {
+    if (!UserMapper.instance) {
+      UserMapper.instance = new UserMapper();
+    }
+
+    return UserMapper.instance;
   }
 }

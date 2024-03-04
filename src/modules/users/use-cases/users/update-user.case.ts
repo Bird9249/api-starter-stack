@@ -1,6 +1,5 @@
 import { password } from "bun";
 import { HTTPException } from "hono/http-exception";
-import { Inject, Service } from "typedi";
 import ICommandHandler from "../../../../common/interfaces/cqrs/command.interface";
 import { BunFileUpload } from "../../../../infrastructure/file-upload/bun/bun-file-upload.service";
 import UpdateUserCommand from "../../domain/commands/users/update-user.command";
@@ -8,14 +7,11 @@ import Profile from "../../domain/entities/profile.entity";
 import Role from "../../domain/entities/role.entity";
 import { UserDrizzleRepo } from "../../drizzle/user/user.repository";
 
-@Service()
 export default class UpdateUserCase
   implements ICommandHandler<UpdateUserCommand, string>
 {
-  constructor(
-    @Inject() private readonly _repository: UserDrizzleRepo,
-    @Inject() private readonly _fileUpload: BunFileUpload
-  ) {}
+  private readonly _repository = UserDrizzleRepo.getInstance();
+  private readonly _fileUpload = BunFileUpload.getInstance();
 
   async execute({ id, dto }: UpdateUserCommand): Promise<string> {
     const user = await this._repository.getById(id);
@@ -52,5 +48,14 @@ export default class UpdateUserCase
     await this._repository.update(user);
 
     return "ອັບເດດຜູ້ໃຊ້ສຳເລັດ";
+  }
+
+  private static instance: UpdateUserCase;
+  public static getInstance(): UpdateUserCase {
+    if (!UpdateUserCase.instance) {
+      UpdateUserCase.instance = new UpdateUserCase();
+    }
+
+    return UpdateUserCase.instance;
   }
 }

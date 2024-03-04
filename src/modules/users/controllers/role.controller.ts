@@ -1,6 +1,5 @@
 import { createFactory } from "hono/factory";
 import { validator } from "hono/validator";
-import Container from "typedi";
 import { parse, parseAsync } from "valibot";
 import { GetByIdDto } from "../../../common/dtos/get-by-id.dto";
 import { OffsetBasePaginateDto } from "../../../common/dtos/offset-base-paginate.dto";
@@ -25,7 +24,7 @@ import UpdateRoleCase from "../use-cases/roles/update-role.case";
 
 const factory = createFactory();
 
-const getRolesCase = Container.get(GetRoleDrizzleRepo);
+const getRolesCase = GetRoleDrizzleRepo.getInstance();
 export const getRoles = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Read, PermissionGroup.User),
@@ -39,7 +38,7 @@ export const getRoles = factory.createHandlers(
   }
 );
 
-const createCase = Container.get(CreateRoleCase);
+const createCase = CreateRoleCase.getInstance();
 export const createRole = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Write, PermissionGroup.User),
@@ -53,7 +52,7 @@ export const createRole = factory.createHandlers(
   }
 );
 
-const getByIdCase = Container.get(GetRoleByIdDrizzleRepo);
+const getByIdCase = GetRoleByIdDrizzleRepo.getInstance();
 export const getRoleById = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Read, PermissionGroup.User),
@@ -67,7 +66,7 @@ export const getRoleById = factory.createHandlers(
   }
 );
 
-const updateCase = Container.get(UpdateRoleCase);
+const updateCase = UpdateRoleCase.getInstance();
 export const updateRole = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Write, PermissionGroup.User),
@@ -83,7 +82,7 @@ export const updateRole = factory.createHandlers(
   }
 );
 
-const deleteCase = Container.get(DeleteRoleCase);
+const deleteCase = DeleteRoleCase.getInstance();
 export const deleteRole = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Remove, PermissionGroup.User),

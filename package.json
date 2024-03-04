@@ -5,15 +5,11 @@
     "migrate": "bun run migrate.ts"
   },
   "dependencies": {
-    "@hono/swagger-ui": "^0.2.1",
-    "@scalar/hono-api-reference": "^0.3.59",
     "drizzle-orm": "^0.29.4",
     "hono": "^4.0.5",
     "mysql2": "^3.9.1",
     "pg": "^8.11.3",
     "postgres": "^3.4.3",
-    "reflect-metadata": "^0.2.1",
-    "typedi": "^0.10.0",
     "valibot": "^0.29.0"
   },
   "devDependencies": {

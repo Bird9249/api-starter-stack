@@ -1,5 +1,4 @@
 import { password } from "bun";
-import { Inject, Service } from "typedi";
 import ICommandHandler from "../../../../common/interfaces/cqrs/command.interface";
 import { BunFileUpload } from "../../../../infrastructure/file-upload/bun/bun-file-upload.service";
 import CreateUserCommand from "../../domain/commands/users/create-user.command";
@@ -8,14 +7,11 @@ import Role from "../../domain/entities/role.entity";
 import User from "../../domain/entities/user.entity";
 import { UserDrizzleRepo } from "../../drizzle/user/user.repository";
 
-@Service()
 export default class CreateUserCase
   implements ICommandHandler<CreateUserCommand, string>
 {
-  constructor(
-    @Inject() private readonly _repository: UserDrizzleRepo,
-    @Inject() private readonly _fileUpload: BunFileUpload
-  ) {}
+  private readonly _repository = UserDrizzleRepo.getInstance();
+  private readonly _fileUpload = BunFileUpload.getInstance();
 
   async execute({ dto }: CreateUserCommand): Promise<string> {
     const user = new User();
@@ -38,5 +34,14 @@ export default class CreateUserCase
     await this._repository.create(user);
 
     return "ເພີ່ມຜູ້ໃຊ້ສຳເລັດ";
+  }
+
+  private static instance: CreateUserCase;
+  public static getInstance(): CreateUserCase {
+    if (!CreateUserCase.instance) {
+      CreateUserCase.instance = new CreateUserCase();
+    }
+
+    return CreateUserCase.instance;
   }
 }

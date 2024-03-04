@@ -1,5 +1,4 @@
 import { count } from "drizzle-orm";
-import { Inject, Service } from "typedi";
 import { DrizzleConnection } from "../../../../infrastructure/drizzle/connection";
 import GetUserQuery from "../../domain/queries/users/get-user.query";
 import IGetUserRepository, {
@@ -11,21 +10,18 @@ import { SessionMapper } from "../mappers/session.mapper";
 import { UserMapper } from "../mappers/user.mapper";
 import { users } from "../schema/users";
 
-@Service()
 export class GetUserDrizzleRepo implements IGetUserRepository {
   private readonly drizzle = DrizzleConnection.getInstance();
-
-  constructor(
-    @Inject() private readonly _mapper: UserMapper,
-    @Inject() private readonly _profileMapper: ProfileMapper,
-    @Inject() private readonly _roleMapper: RoleMapper,
-    @Inject() private readonly _sessionMapper: SessionMapper
-  ) {}
+  private readonly _mapper = UserMapper.getInstance();
+  private readonly _profileMapper = ProfileMapper.getInstance();
+  private readonly _roleMapper = RoleMapper.getInstance();
+  private readonly _sessionMapper = SessionMapper.getInstance();
 
   private _prepared = this.drizzle.db
     .select({ value: count() })
     .from(users)
     .prepare("count_users");
+
   async execute({
     paginate: { offset, limit },
   }: GetUserQuery): Promise<GetUsersResult> {
@@ -56,5 +52,14 @@ export class GetUserDrizzleRepo implements IGetUserRepository {
       })),
       total: total[0].value,
     };
+  }
+
+  private static instance: GetUserDrizzleRepo;
+  public static getInstance(): GetUserDrizzleRepo {
+    if (!GetUserDrizzleRepo.instance) {
+      GetUserDrizzleRepo.instance = new GetUserDrizzleRepo();
+    }
+
+    return GetUserDrizzleRepo.instance;
   }
 }

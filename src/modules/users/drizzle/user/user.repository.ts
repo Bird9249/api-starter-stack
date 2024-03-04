@@ -1,5 +1,4 @@
 import { eq, sql } from "drizzle-orm";
-import { Inject, Service } from "typedi";
 import { DrizzleConnection } from "../../../../infrastructure/drizzle/connection";
 import User from "../../domain/entities/user.entity";
 import { IUserRepository } from "../../domain/repositories/users/user.interface";
@@ -10,15 +9,11 @@ import { profiles } from "../schema/profiles";
 import { users } from "../schema/users";
 import { usersToRoles } from "../schema/users_to_roles";
 
-@Service()
 export class UserDrizzleRepo implements IUserRepository {
   private readonly drizzle = DrizzleConnection.getInstance();
-
-  constructor(
-    @Inject() private readonly _mapper: UserMapper,
-    @Inject() private readonly _profileMapper: ProfileMapper,
-    @Inject() private readonly _roleMapper: RoleMapper
-  ) {}
+  private readonly _mapper = UserMapper.getInstance();
+  private readonly _profileMapper = ProfileMapper.getInstance();
+  private readonly _roleMapper = RoleMapper.getInstance();
 
   async create(entity: User): Promise<void> {
     const model = this._mapper.toModel(entity);
@@ -105,5 +100,14 @@ export class UserDrizzleRepo implements IUserRepository {
 
   async remove(id: number): Promise<void> {
     await this.drizzle.db.delete(users).where(eq(users.id, id));
+  }
+
+  private static instance: UserDrizzleRepo;
+  public static getInstance(): UserDrizzleRepo {
+    if (!UserDrizzleRepo.instance) {
+      UserDrizzleRepo.instance = new UserDrizzleRepo();
+    }
+
+    return UserDrizzleRepo.instance;
   }
 }

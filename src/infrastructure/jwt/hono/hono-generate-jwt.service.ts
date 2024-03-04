@@ -1,5 +1,4 @@
 import { decode, sign, verify } from "hono/jwt";
-import { Service } from "typedi";
 import {
   DurationType,
   IGenerateJwt,
@@ -7,7 +6,6 @@ import {
 } from "../generate-jwt.interface";
 import { JWT_SECRET } from "../secret";
 
-@Service()
 export class HonoGenerateJwtService extends IGenerateJwt {
   async sign(
     payload: IPayload,
@@ -31,5 +29,14 @@ export class HonoGenerateJwtService extends IGenerateJwt {
 
   decode(token: string): IPayload {
     return decode(token).payload;
+  }
+
+  private static instance: HonoGenerateJwtService;
+  public static getInstance(): HonoGenerateJwtService {
+    if (!HonoGenerateJwtService.instance) {
+      HonoGenerateJwtService.instance = new HonoGenerateJwtService();
+    }
+
+    return HonoGenerateJwtService.instance;
   }
 }

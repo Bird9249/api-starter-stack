@@ -1,18 +1,14 @@
 import { HTTPException } from "hono/http-exception";
-import { Inject, Service } from "typedi";
 import ICommandHandler from "../../../../common/interfaces/cqrs/command.interface";
 import { BunFileUpload } from "../../../../infrastructure/file-upload/bun/bun-file-upload.service";
 import DeleteUserCommand from "../../domain/commands/users/delete-user.command";
 import { UserDrizzleRepo } from "../../drizzle/user/user.repository";
 
-@Service()
 export default class DeleteUserCase
   implements ICommandHandler<DeleteUserCommand, string>
 {
-  constructor(
-    @Inject() private readonly _repository: UserDrizzleRepo,
-    @Inject() private readonly _upload: BunFileUpload
-  ) {}
+  private readonly _repository = UserDrizzleRepo.getInstance();
+  private readonly _upload = BunFileUpload.getInstance();
 
   async execute({ id }: DeleteUserCommand): Promise<string> {
     const user = await this._repository.getById(id);
@@ -32,5 +28,14 @@ export default class DeleteUserCase
     await this._repository.remove(id);
 
     return "ລຶບຜູ້ໃຊ້ສຳເລັດ";
+  }
+
+  private static instance: DeleteUserCase;
+  public static getInstance(): DeleteUserCase {
+    if (!DeleteUserCase.instance) {
+      DeleteUserCase.instance = new DeleteUserCase();
+    }
+
+    return DeleteUserCase.instance;
   }
 }

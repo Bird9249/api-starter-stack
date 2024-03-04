@@ -1,5 +1,4 @@
 import { count, eq } from "drizzle-orm";
-import { Inject, Service } from "typedi";
 import { IPaginated } from "../../../../common/interfaces/pagination/paginated.interface";
 import { DrizzleConnection } from "../../../../infrastructure/drizzle/connection";
 import Role from "../../domain/entities/role.entity";
@@ -8,11 +7,9 @@ import IGetRoleRepository from "../../domain/repositories/roles/get-role.interfa
 import { RoleMapper } from "../mappers/role.mapper";
 import { roles } from "../schema/roles";
 
-@Service()
 export class GetRoleDrizzleRepo implements IGetRoleRepository {
   private readonly drizzle = DrizzleConnection.getInstance();
-
-  constructor(@Inject() private readonly _mapper: RoleMapper) {}
+  private readonly _mapper = RoleMapper.getInstance();
 
   private _getCount = this.drizzle.db
     .select({ value: count() })
@@ -34,5 +31,14 @@ export class GetRoleDrizzleRepo implements IGetRoleRepository {
       data: res.map((val) => this._mapper.toEntity(val)),
       total: total[0].value,
     };
+  }
+
+  private static instance: GetRoleDrizzleRepo;
+  public static getInstance(): GetRoleDrizzleRepo {
+    if (!GetRoleDrizzleRepo.instance) {
+      GetRoleDrizzleRepo.instance = new GetRoleDrizzleRepo();
+    }
+
+    return GetRoleDrizzleRepo.instance;
   }
 }

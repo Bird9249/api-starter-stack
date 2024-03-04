@@ -1,6 +1,5 @@
 import { password } from "bun";
 import { HTTPException } from "hono/http-exception";
-import { Inject, Service } from "typedi";
 import ICommandHandler from "../../../../common/interfaces/cqrs/command.interface";
 import { IPayload } from "../../../../infrastructure/jwt/generate-jwt.interface";
 import { HonoGenerateJwtService } from "../../../../infrastructure/jwt/hono/hono-generate-jwt.service";
@@ -17,14 +16,11 @@ type ResultType = {
   permissions: string[];
 };
 
-@Service()
 export default class LoginCase
   implements ICommandHandler<LoginCommand, ResultType>
 {
-  constructor(
-    @Inject() private readonly _repository: AuthDrizzleRepo,
-    @Inject() private readonly _generateJwt: HonoGenerateJwtService
-  ) {}
+  private readonly _repository = AuthDrizzleRepo.getInstance();
+  private readonly _generateJwt = HonoGenerateJwtService.getInstance();
 
   async execute({ dto }: LoginCommand): Promise<ResultType> {
     const user = await this._checkUser(dto);
@@ -86,5 +82,14 @@ export default class LoginCase
     session.user = user;
 
     await this._repository.createSession(session);
+  }
+
+  private static instance: LoginCase;
+  public static getInstance(): LoginCase {
+    if (!LoginCase.instance) {
+      LoginCase.instance = new LoginCase();
+    }
+
+    return LoginCase.instance;
   }
 }

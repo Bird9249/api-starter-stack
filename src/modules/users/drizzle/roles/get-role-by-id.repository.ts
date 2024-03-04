@@ -1,5 +1,3 @@
-import { Inject, Service } from "typedi";
-
 import { sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { DrizzleConnection } from "../../../../infrastructure/drizzle/connection";
@@ -10,15 +8,11 @@ import { PermissionMapper } from "../mappers/permission.mapper";
 import { RoleMapper } from "../mappers/role.mapper";
 import { UserMapper } from "../mappers/user.mapper";
 
-@Service()
 export class GetRoleByIdDrizzleRepo implements IGetRoleByIdRepository {
   private readonly drizzle = DrizzleConnection.getInstance();
-
-  constructor(
-    @Inject() private readonly _mapper: RoleMapper,
-    @Inject() private readonly _userMapper: UserMapper,
-    @Inject() private readonly _permissionMapper: PermissionMapper
-  ) {}
+  private readonly _mapper = RoleMapper.getInstance();
+  private readonly _userMapper = UserMapper.getInstance();
+  private readonly _permissionMapper = PermissionMapper.getInstance();
 
   private _prepared = this.drizzle.db.query.roles
     .findFirst({
@@ -44,5 +38,14 @@ export class GetRoleByIdDrizzleRepo implements IGetRoleByIdRepository {
       ),
       users: res.usersToRoles.map((val) => this._userMapper.toEntity(val.user)),
     };
+  }
+
+  private static instance: GetRoleByIdDrizzleRepo;
+  public static getInstance(): GetRoleByIdDrizzleRepo {
+    if (!GetRoleByIdDrizzleRepo.instance) {
+      GetRoleByIdDrizzleRepo.instance = new GetRoleByIdDrizzleRepo();
+    }
+
+    return GetRoleByIdDrizzleRepo.instance;
   }
 }

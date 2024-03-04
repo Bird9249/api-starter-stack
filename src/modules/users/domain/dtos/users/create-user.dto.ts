@@ -1,4 +1,3 @@
-import Container from "typedi";
 import {
   Input,
   blob,
@@ -16,8 +15,8 @@ import {
 import { RoleDrizzleRepo } from "../../../drizzle/roles/role.repository";
 import { UserDrizzleRepo } from "../../../drizzle/user/user.repository";
 
-const repository = Container.get(UserDrizzleRepo);
-const roleRepository = Container.get(RoleDrizzleRepo);
+const repository = UserDrizzleRepo.getInstance();
+const roleRepository = RoleDrizzleRepo.getInstance();
 
 const CreateUserDto = objectAsync({
   first_name: string("ຈະຕ້ອງບໍ່ຫວ່າງເປົ່າ.", [

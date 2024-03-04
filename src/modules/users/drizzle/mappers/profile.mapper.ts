@@ -1,8 +1,6 @@
-import { Service } from "typedi";
 import Profile from "../../domain/entities/profile.entity";
 import { InsertProfileSchema, ProfileSchema } from "../schema/profiles";
 
-@Service()
 export class ProfileMapper {
   toModel(entity: Profile): InsertProfileSchema {
     return {
@@ -25,5 +23,15 @@ export class ProfileMapper {
     entity.created_at = model.created_at;
     entity.updated_at = model.updated_at;
     return entity;
+  }
+
+  private static instance: ProfileMapper;
+
+  public static getInstance(): ProfileMapper {
+    if (!ProfileMapper.instance) {
+      ProfileMapper.instance = new ProfileMapper();
+    }
+
+    return ProfileMapper.instance;
   }
 }

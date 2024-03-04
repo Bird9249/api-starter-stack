@@ -1,6 +1,5 @@
 import { createFactory } from "hono/factory";
 import { JwtTokenExpired, JwtTokenInvalid } from "hono/utils/jwt/types";
-import Container from "typedi";
 import { HonoGenerateJwtService } from "../../infrastructure/jwt/hono/hono-generate-jwt.service";
 import RemoveSessionCommand from "../../modules/users/domain/commands/auth/remove-session.command";
 import { AuthDrizzleRepo } from "../../modules/users/drizzle/auth/auth.repository";
@@ -8,9 +7,9 @@ import RemoveSessionCase from "../../modules/users/use-cases/auth/remove-session
 import { JwtErrorCode } from "../enum/jwt-error-code.enum";
 
 const factory = createFactory();
-const jwt = Container.get(HonoGenerateJwtService);
-const removeSessionCase = Container.get(RemoveSessionCase);
-const repository = Container.get(AuthDrizzleRepo);
+const jwt = HonoGenerateJwtService.getInstance();
+const removeSessionCase = RemoveSessionCase.getInstance();
+const repository = AuthDrizzleRepo.getInstance();
 
 export default factory.createMiddleware(async ({ req, json, set }, next) => {
   const authHeader = req.header("Authorization");

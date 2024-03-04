@@ -5,8 +5,6 @@ import { schema } from "../../modules/users/drizzle/schema/index";
 export class DrizzleConnection {
   private static instance: DrizzleConnection;
 
-  constructor() {}
-
   public static getInstance(): DrizzleConnection {
     if (!DrizzleConnection.instance) {
       DrizzleConnection.instance = new DrizzleConnection();

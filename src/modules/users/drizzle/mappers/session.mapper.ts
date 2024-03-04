@@ -1,8 +1,6 @@
-import { Service } from "typedi";
 import Session from "../../domain/entities/session.entity";
 import { InsertSessionSchema, SessionSchema } from "../schema/sessions";
 
-@Service()
 export class SessionMapper {
   toModel(entity: Session): InsertSessionSchema {
     return {
@@ -17,5 +15,15 @@ export class SessionMapper {
     entity.id = model.id;
     entity.created_at = model.created_at;
     return entity;
+  }
+
+  private static instance: SessionMapper;
+
+  public static getInstance(): SessionMapper {
+    if (!SessionMapper.instance) {
+      SessionMapper.instance = new SessionMapper();
+    }
+
+    return SessionMapper.instance;
   }
 }

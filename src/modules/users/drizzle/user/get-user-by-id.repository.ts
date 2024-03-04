@@ -1,5 +1,4 @@
 import { sql } from "drizzle-orm";
-import { Inject, Service } from "typedi";
 import { DrizzleConnection } from "../../../../infrastructure/drizzle/connection";
 import GetUserByIdQuery from "../../domain/queries/users/get-user-by-id.query";
 import IGetUserByIdRepository, {
@@ -10,16 +9,12 @@ import { RoleMapper } from "../mappers/role.mapper";
 import { SessionMapper } from "../mappers/session.mapper";
 import { UserMapper } from "../mappers/user.mapper";
 
-@Service()
 export class GetUserByIdDrizzleRepo implements IGetUserByIdRepository {
   private readonly drizzle = DrizzleConnection.getInstance();
-
-  constructor(
-    @Inject() private readonly _mapper: UserMapper,
-    @Inject() private readonly _profileMapper: ProfileMapper,
-    @Inject() private readonly _roleMapper: RoleMapper,
-    @Inject() private readonly _sessionMapper: SessionMapper
-  ) {}
+  private readonly _mapper = UserMapper.getInstance();
+  private readonly _profileMapper = ProfileMapper.getInstance();
+  private readonly _roleMapper = RoleMapper.getInstance();
+  private readonly _sessionMapper = SessionMapper.getInstance();
 
   private _prepared = this.drizzle.db.query.users
     .findFirst({
@@ -70,5 +65,14 @@ export class GetUserByIdDrizzleRepo implements IGetUserByIdRepository {
       permissions,
       session: res.sessions.map((ses) => this._sessionMapper.toEntity(ses))[0],
     };
+  }
+
+  private static instance: GetUserByIdDrizzleRepo;
+  public static getInstance(): GetUserByIdDrizzleRepo {
+    if (!GetUserByIdDrizzleRepo.instance) {
+      GetUserByIdDrizzleRepo.instance = new GetUserByIdDrizzleRepo();
+    }
+
+    return GetUserByIdDrizzleRepo.instance;
   }
 }

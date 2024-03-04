@@ -1,6 +1,5 @@
 import { createFactory } from "hono/factory";
 import { validator } from "hono/validator";
-import Container from "typedi";
 import { parse } from "valibot";
 import authMiddleware from "../../../common/middlewares/auth.middleware";
 import refreshTokenMiddleware from "../../../common/middlewares/refresh-token.middleware";
@@ -17,7 +16,7 @@ import RefreshTokenCase from "../use-cases/auth/refresh-token.case";
 
 const factory = createFactory();
 
-const loginCase = Container.get(LoginCase);
+const loginCase = LoginCase.getInstance();
 export const login = factory.createHandlers(
   validator("json", (value) => parse(LoginDto, value)),
   async (c) => {
@@ -29,7 +28,7 @@ export const login = factory.createHandlers(
   }
 );
 
-const refreshTokenCase = Container.get(RefreshTokenCase);
+const refreshTokenCase = RefreshTokenCase.getInstance();
 export const refreshToken = factory.createHandlers(
   refreshTokenMiddleware,
   async (c) => {
@@ -43,7 +42,7 @@ export const refreshToken = factory.createHandlers(
   }
 );
 
-const getUserByIdCase = Container.get(GetUserByIdDrizzleRepo);
+const getUserByIdCase = GetUserByIdDrizzleRepo.getInstance();
 export const getMe = factory.createHandlers(authMiddleware, async (c) => {
   const { sub } = c.var.jwtPayload as IPayload;
 
@@ -54,7 +53,7 @@ export const getMe = factory.createHandlers(authMiddleware, async (c) => {
   return c.json({ ...result }, 200);
 });
 
-const logoutCase = Container.get(LogoutCase);
+const logoutCase = LogoutCase.getInstance();
 export const logout = factory.createHandlers(authMiddleware, async (c) => {
   const token = (c.req.header("Authorization") as string).split(" ")[1];
 

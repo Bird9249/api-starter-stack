@@ -1,14 +1,12 @@
 import { HTTPException } from "hono/http-exception";
-import { Inject, Service } from "typedi";
 import ICommandHandler from "../../../../common/interfaces/cqrs/command.interface";
 import DeleteRoleCommand from "../../domain/commands/roles/delete-role.command";
 import { RoleDrizzleRepo } from "../../drizzle/roles/role.repository";
 
-@Service()
 export default class DeleteRoleCase
   implements ICommandHandler<DeleteRoleCommand, string>
 {
-  constructor(@Inject() private readonly _repository: RoleDrizzleRepo) {}
+  private readonly _repository = RoleDrizzleRepo.getInstance();
 
   async execute({ id }: DeleteRoleCommand): Promise<string> {
     const role = await this._repository.getById(id);
@@ -26,5 +24,14 @@ export default class DeleteRoleCase
     await this._repository.remove(id);
 
     return "ລຶບບົດບາດສຳເລັດ";
+  }
+
+  private static instance: DeleteRoleCase;
+  public static getInstance(): DeleteRoleCase {
+    if (!DeleteRoleCase.instance) {
+      DeleteRoleCase.instance = new DeleteRoleCase();
+    }
+
+    return DeleteRoleCase.instance;
   }
 }

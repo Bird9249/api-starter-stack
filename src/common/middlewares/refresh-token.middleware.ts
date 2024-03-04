@@ -1,11 +1,10 @@
 import { createFactory } from "hono/factory";
 import { JwtTokenExpired, JwtTokenInvalid } from "hono/utils/jwt/types";
-import Container from "typedi";
 import { HonoGenerateJwtService } from "../../infrastructure/jwt/hono/hono-generate-jwt.service";
 import { JwtErrorCode } from "../enum/jwt-error-code.enum";
 
 const factory = createFactory();
-const jwt = Container.get(HonoGenerateJwtService);
+const jwt = HonoGenerateJwtService.getInstance();
 
 export default factory.createMiddleware(async ({ req, json }, next) => {
   const authHeader = req.header("Authorization");

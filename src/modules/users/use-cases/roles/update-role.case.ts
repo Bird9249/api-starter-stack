@@ -1,15 +1,13 @@
 import { HTTPException } from "hono/http-exception";
-import { Inject, Service } from "typedi";
 import ICommandHandler from "../../../../common/interfaces/cqrs/command.interface";
 import UpdateRoleCommand from "../../domain/commands/roles/update-role.command";
 import Permission from "../../domain/entities/permission.entity";
 import { RoleDrizzleRepo } from "../../drizzle/roles/role.repository";
 
-@Service()
 export default class UpdateRoleCase
   implements ICommandHandler<UpdateRoleCommand, string>
 {
-  constructor(@Inject() private readonly _repository: RoleDrizzleRepo) {}
+  private readonly _repository = RoleDrizzleRepo.getInstance();
 
   async execute({ id, dto }: UpdateRoleCommand): Promise<string> {
     const role = await this._repository.getById(id);
@@ -30,5 +28,14 @@ export default class UpdateRoleCase
     await this._repository.update(role);
 
     return "ອັບເດດບົດບາດສຳເລັດ";
+  }
+
+  private static instance: UpdateRoleCase;
+  public static getInstance(): UpdateRoleCase {
+    if (!UpdateRoleCase.instance) {
+      UpdateRoleCase.instance = new UpdateRoleCase();
+    }
+
+    return UpdateRoleCase.instance;
   }
 }

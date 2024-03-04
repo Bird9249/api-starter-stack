@@ -1,9 +1,7 @@
-import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
 import { cors } from "hono/cors";
 import { HTTPException } from "hono/http-exception";
-import "reflect-metadata";
 import { ValiError, flatten } from "valibot";
 import authRouter from "./modules/users/routers/auth.router";
 import permissionRouter from "./modules/users/routers/permissions.router";
@@ -15,8 +13,6 @@ const app = new Hono();
 app
   .use("/public/*", serveStatic({ root: "./" }))
   .use(cors())
-
-  .get("/ui", swaggerUI({ url: "public/openapi.yml" }))
   .route("/auth", authRouter)
   .route("/users", userRouter)
   .route("/roles", roleRouter)

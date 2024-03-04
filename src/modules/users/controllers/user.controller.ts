@@ -1,7 +1,6 @@
 import { createFactory } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { validator } from "hono/validator";
-import Container from "typedi";
 import { parse, parseAsync } from "valibot";
 import { GetByIdDto } from "../../../common/dtos/get-by-id.dto";
 import { OffsetBasePaginateDto } from "../../../common/dtos/offset-base-paginate.dto";
@@ -26,7 +25,7 @@ import UpdateUserCase from "../use-cases/users/update-user.case";
 
 const factory = createFactory();
 
-const getCase = Container.get(GetUserDrizzleRepo);
+const getCase = GetUserDrizzleRepo.getInstance();
 export const getUser = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Read, PermissionGroup.User),
@@ -40,7 +39,7 @@ export const getUser = factory.createHandlers(
   }
 );
 
-const createCase = Container.get(CreateUserCase);
+const createCase = CreateUserCase.getInstance();
 export const createUser = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Write, PermissionGroup.User),
@@ -54,7 +53,7 @@ export const createUser = factory.createHandlers(
   }
 );
 
-const getByIdCase = Container.get(GetUserByIdDrizzleRepo);
+const getByIdCase = GetUserByIdDrizzleRepo.getInstance();
 export const getUserById = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Read, PermissionGroup.User),
@@ -71,7 +70,7 @@ export const getUserById = factory.createHandlers(
   }
 );
 
-const updateCase = Container.get(UpdateUserCase);
+const updateCase = UpdateUserCase.getInstance();
 export const updateUser = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Write, PermissionGroup.User),
@@ -93,7 +92,7 @@ export const updateUser = factory.createHandlers(
   }
 );
 
-const deleteCase = Container.get(DeleteUserCase);
+const deleteCase = DeleteUserCase.getInstance();
 export const deleteUser = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Remove, PermissionGroup.User),

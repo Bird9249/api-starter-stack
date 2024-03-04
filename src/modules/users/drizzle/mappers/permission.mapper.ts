@@ -1,4 +1,3 @@
-import { Service } from "typedi";
 import Permission, {
   PermissionGroup,
 } from "../../domain/entities/permission.entity";
@@ -7,7 +6,6 @@ import {
   PermissionSchema,
 } from "../schema/permissions";
 
-@Service()
 export class PermissionMapper {
   toModel(entity: Permission): InsertPermissionSchema {
     return {
@@ -27,5 +25,15 @@ export class PermissionMapper {
     entity.description = model.description ?? undefined;
     entity.created_at = model.created_at;
     return entity;
+  }
+
+  private static instance: PermissionMapper;
+
+  public static getInstance(): PermissionMapper {
+    if (!PermissionMapper.instance) {
+      PermissionMapper.instance = new PermissionMapper();
+    }
+
+    return PermissionMapper.instance;
   }
 }

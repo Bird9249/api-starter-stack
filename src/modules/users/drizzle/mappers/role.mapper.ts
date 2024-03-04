@@ -1,8 +1,6 @@
-import { Service } from "typedi";
 import Role from "../../domain/entities/role.entity";
 import { InsertRoleSchema, RoleSchema } from "../schema/roles";
 
-@Service()
 export class RoleMapper {
   toModel(entity: Role): InsertRoleSchema {
     return {
@@ -25,5 +23,15 @@ export class RoleMapper {
     entity.created_at = model.created_at;
     entity.updated_at = model.updated_at;
     return entity;
+  }
+
+  private static instance: RoleMapper;
+
+  public static getInstance(): RoleMapper {
+    if (!RoleMapper.instance) {
+      RoleMapper.instance = new RoleMapper();
+    }
+
+    return RoleMapper.instance;
   }
 }

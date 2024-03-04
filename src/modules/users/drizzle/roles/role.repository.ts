@@ -1,5 +1,4 @@
 import { eq, inArray, sql } from "drizzle-orm";
-import { Inject, Service } from "typedi";
 import { DrizzleConnection } from "../../../../infrastructure/drizzle/connection";
 import Role from "../../domain/entities/role.entity";
 import { IRoleRepository } from "../../domain/repositories/roles/role.interface";
@@ -7,11 +6,9 @@ import { RoleMapper } from "../mappers/role.mapper";
 import { roles } from "../schema/roles";
 import { rolesToPermissions } from "../schema/roles_to_permissions";
 
-@Service()
 export class RoleDrizzleRepo implements IRoleRepository {
   private readonly drizzle = DrizzleConnection.getInstance();
-
-  constructor(@Inject() private readonly _mapper: RoleMapper) {}
+  private readonly _mapper = RoleMapper.getInstance();
 
   async create(entity: Role): Promise<void> {
     const model = this._mapper.toModel(entity);
@@ -77,5 +74,14 @@ export class RoleDrizzleRepo implements IRoleRepository {
       .where(inArray(roles.id, ids));
 
     return result.map((val) => this._mapper.toEntity(val));
+  }
+
+  private static instance: RoleDrizzleRepo;
+  public static getInstance(): RoleDrizzleRepo {
+    if (!RoleDrizzleRepo.instance) {
+      RoleDrizzleRepo.instance = new RoleDrizzleRepo();
+    }
+
+    return RoleDrizzleRepo.instance;
   }
 }

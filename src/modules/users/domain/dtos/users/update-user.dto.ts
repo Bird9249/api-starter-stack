@@ -1,4 +1,3 @@
-import Container from "typedi";
 import {
   Input,
   blob,
@@ -18,7 +17,7 @@ import {
 import { UserDrizzleRepo } from "../../../drizzle/user/user.repository";
 import { CreateUserDto } from "./create-user.dto";
 
-const repository = Container.get(UserDrizzleRepo);
+const repository = UserDrizzleRepo.getInstance();
 
 const UpdateUserDto = mergeAsync([
   omitAsync(CreateUserDto, ["password", "email", "image"]),

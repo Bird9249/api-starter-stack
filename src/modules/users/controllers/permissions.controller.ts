@@ -1,5 +1,4 @@
 import { createFactory } from "hono/factory";
-import Container from "typedi";
 import authMiddleware from "../../../common/middlewares/auth.middleware";
 import permissionMiddleware from "../../../common/middlewares/permission.middleware";
 import {
@@ -10,7 +9,7 @@ import { GetPermissionDrizzleRepo } from "../drizzle/permissions/get-permission.
 
 const factory = createFactory();
 
-const getPermissionCase = Container.get(GetPermissionDrizzleRepo);
+const getPermissionCase = GetPermissionDrizzleRepo.getInstance();
 export const getPermission = factory.createHandlers(
   authMiddleware,
   permissionMiddleware(PermissionNames.Read, PermissionGroup.User),

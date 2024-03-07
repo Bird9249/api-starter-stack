@@ -18,8 +18,11 @@ export default (name: PermissionNames, group: PermissionGroup) =>
     ) {
       await next();
     } else {
-      return c.json({
-        message: "ຫ້າມເຂົ້າເຖິງ. ທ່ານບໍ່ມີສິດໃນການເຂົ້າເຖິງຊັບພະຍາກອນນີ້.",
-      });
+      return c.json(
+        {
+          message: "ຫ້າມເຂົ້າເຖິງ. ທ່ານບໍ່ມີສິດໃນການເຂົ້າເຖິງຊັບພະຍາກອນນີ້.",
+        },
+        403
+      );
     }
   });

@@ -22,7 +22,7 @@ export class GetUserByIdDrizzleRepo implements IGetUserByIdRepository {
       where: (fields, { eq }) => eq(fields.id, sql.placeholder("id")),
       with: {
         profile: true,
-        sessions: true,
+        sessions: { orderBy: ({ created_at }, { desc }) => desc(created_at) },
         usersToRoles: {
           with: {
             role: {

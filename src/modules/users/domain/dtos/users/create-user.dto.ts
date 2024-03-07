@@ -52,7 +52,7 @@ const CreateUserDto = objectAsync({
         const ids = input.split(",").map((val) => Number(val));
 
         return (
-          (await roleRepository.checkIdsIsExist(ids)).length === input.length
+          (await roleRepository.checkIdsIsExist(ids)).length === ids.length
         );
       }, "ບົດບາດບາງລາຍການບໍ່ມີໃນລະບົບ"),
       customAsync(async (input) => {
